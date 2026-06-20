@@ -104,13 +104,23 @@ def lint_text(text: str, *, dir_name: str | None = None) -> list[Problem]:
                 )
             )
 
+    # `version` is NOT a recognized top-level SKILL.md field (Anthropic's spec allows only
+    # name/description/license/allowed-tools/mode/disable-model-invocation/metadata). If a
+    # top-level version is present, flag it as a placement warning, matching `skillspec`.
     version = fields.get("version", "")
-    if not version:
+    if version:
         problems.append(
-            Problem("version", "frontmatter missing recommended field: version", severity="warning")
+            Problem(
+                "version",
+                "`version` is not a recognized top-level field; move it under `metadata` "
+                "(e.g. metadata.version)",
+                severity="warning",
+            )
         )
-    elif not _SEMVER_RE.match(version):
-        problems.append(Problem("version", f"version '{version}' is not semver-like (e.g. 1.0.0)"))
+        if not _SEMVER_RE.match(version):
+            problems.append(
+                Problem("version", f"version '{version}' is not semver-like (e.g. 1.0.0)")
+            )
 
     if body.strip() == "":
         problems.append(Problem("body", "body below the frontmatter is empty"))

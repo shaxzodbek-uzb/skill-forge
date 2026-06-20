@@ -31,19 +31,32 @@ def _quote(value: str) -> str:
     return f'"{escaped}"'
 
 
-def render_frontmatter(fields: dict[str, str]) -> str:
-    """Render flat ``key: value`` scalars between ``---`` lines, preserving order.
+def _scalar(value: str) -> str:
+    return _quote(value) if _needs_quote(value) else value
 
-    ``None`` and empty values are skipped. A value is double-quoted when it would
-    otherwise confuse a YAML parser (contains a colon, hash, leading indicator
-    character, or surrounding whitespace).
+
+def render_frontmatter(fields: dict[str, object]) -> str:
+    """Render ``key: value`` frontmatter between ``---`` lines, preserving order.
+
+    Most values are flat scalars. A value that is a ``dict`` is rendered as a one-level
+    nested block (used for the spec's ``metadata`` object, e.g. ``metadata: {version}``).
+    ``None`` and empty values (and empty nested dicts) are skipped. A scalar is
+    double-quoted when it would otherwise confuse a YAML parser (contains a colon, hash,
+    leading indicator character, or surrounding whitespace).
     """
     lines = ["---"]
     for key, value in fields.items():
         if value is None or value == "":
             continue
-        rendered = _quote(value) if _needs_quote(value) else value
-        lines.append(f"{key}: {rendered}")
+        if isinstance(value, dict):
+            nested = {k: str(v) for k, v in value.items() if v is not None and v != ""}
+            if not nested:
+                continue
+            lines.append(f"{key}:")
+            for sub_key, sub_value in nested.items():
+                lines.append(f"  {sub_key}: {_scalar(sub_value)}")
+            continue
+        lines.append(f"{key}: {_scalar(str(value))}")
     lines.append("---")
     return "\n".join(lines)
 

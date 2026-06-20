@@ -17,7 +17,7 @@ existing "AI writes your skill" tool combines:
 2. **Valid by construction.** Every generated skill passes the built-in linter
    (`skill-forge lint`) — the same rules a skill must satisfy to be discoverable:
    well-formed frontmatter, kebab-case `name` that matches its directory, a
-   `description` inside the discovery budget (40–1024 chars), a semver `version`, and a
+   `description` inside the discovery budget (40–1024 chars), a `metadata.version`, and a
    non-empty body. Forge that emits an invalid skill is worthless, so validation runs on
    every generated draft and the CLI refuses to write garbage.
 
@@ -206,7 +206,8 @@ def lint_text(text: str, *, dir_name: str | None = None) -> list[Problem]:
       - frontmatter present + well-formed (else single error, stop),
       - name present, kebab-case, and == dir_name when dir_name given,
       - description present and DESCRIPTION_MIN..DESCRIPTION_MAX chars,
-      - version present (warning if missing) and semver-like (^\\d+\\.\\d+\\.\\d+),
+      - version is optional and NOT a recognized top-level field — a top-level `version`
+        is a placement warning ("move under metadata"); if present it must be semver-like,
       - body below frontmatter non-empty."""
 def lint_skill_file(path: str | Path) -> LintResult:
     """Lint a single SKILL.md; dir_name inferred from the parent directory."""
@@ -232,7 +233,7 @@ def draft_from_signals(signals: SourceSignals, *, name: str | None = None,
 ### skill.py
 ```python
 def render_skill(draft: SkillDraft) -> str:
-    """Full SKILL.md text: render_frontmatter({name, description, version, license?}) +
+    """Full SKILL.md text: render_frontmatter({name, description, license?, metadata:{version}}) +
     blank line + draft.body + trailing newline."""
 def write_skill(draft: SkillDraft, outdir: str | Path, *, force: bool = False) -> Path:
     """Write render_skill(draft) to <outdir>/<draft.name>/SKILL.md. Creates parents.

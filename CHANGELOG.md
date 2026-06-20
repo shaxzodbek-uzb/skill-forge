@@ -6,6 +6,27 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-20
+
+### Changed
+
+- **Spec-correct `version` placement.** Generated skills now write the version under
+  `metadata` (`metadata.version`) instead of a top-level `version:` field. Anthropic's
+  Agent Skills spec recognizes only `name`, `description`, `license`, `allowed-tools`,
+  `mode`, `disable-model-invocation`, and `metadata` at the top level — `version` is not a
+  top-level field. This makes skill-forge's output pass its sibling linter
+  [`skillspec`](https://github.com/shaxzodbek-uzb/skillspec) cleanly (forge → check now
+  agree).
+- The bundled linter (`skill-forge lint`) no longer treats a missing `version` as a
+  problem (it is optional), and now warns when `version` appears as a top-level field,
+  pointing to `metadata.version` — matching `skillspec`.
+
+### Added
+
+- `render_frontmatter` supports a one-level nested block (used for the `metadata` object).
+
+## [0.1.0] - 2026-06-20
+
 ### Added
 
 - Initial release of `skill-forge`, a CLI that generates a valid Claude `SKILL.md` from a

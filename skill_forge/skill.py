@@ -11,14 +11,21 @@ from .slug import is_kebab_case
 
 
 def render_skill(draft: SkillDraft) -> str:
-    """Return the full ``SKILL.md`` text (frontmatter + body) for ``draft``."""
-    fields = {
+    """Return the full ``SKILL.md`` text (frontmatter + body) for ``draft``.
+
+    Per Anthropic's Agent Skills spec the only recognized top-level frontmatter fields are
+    ``name``, ``description``, ``license``, ``allowed-tools``, ``mode``,
+    ``disable-model-invocation`` and ``metadata``. ``version`` is **not** a top-level field,
+    so it is written under ``metadata`` (the spec's free-form object).
+    """
+    fields: dict[str, object] = {
         "name": draft.name,
         "description": draft.description,
-        "version": draft.version,
     }
     if draft.license:
         fields["license"] = draft.license
+    if draft.version:
+        fields["metadata"] = {"version": draft.version}
     return render_frontmatter(fields) + "\n\n" + draft.body.rstrip() + "\n"
 
 

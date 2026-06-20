@@ -120,6 +120,21 @@ def test_docs_only_boilerplate_headings_yields_no_notes(tmp_path):
     assert analyze(doc).notes == []
 
 
+# spec alignment — generated skills put version under metadata, never top-level (skillspec
+# and Anthropic's spec agree: `version` is not a recognized top-level frontmatter field).
+def test_generated_version_is_under_metadata(python_project):
+    from skill_forge import render_skill
+
+    text = render_skill(forge(python_project))
+    fields, _ = parse_frontmatter(text)
+    assert "version" not in fields  # not a top-level key
+    assert "metadata:\n  version: 0.1.0" in text  # nested under metadata
+    # and the bundled linter is clean on our own output (no version-placement warning).
+    from skill_forge import lint_text
+
+    assert lint_text(text, dir_name="widget") == []
+
+
 # #13 — When-to-use is derived from signals, not static boilerplate.
 def test_when_to_use_is_signal_driven():
     body = build_body(

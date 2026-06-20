@@ -75,8 +75,12 @@ def test_parse_no_frontmatter():
 # --------------------------------------------------------------------------- validate
 
 
-def _good_skill(description: str = "x" * 60, version: str = "0.1.0", body: str = "Body.") -> str:
-    return f"---\nname: my-skill\ndescription: {description}\nversion: {version}\n---\n\n{body}\n"
+# version lives under metadata (spec-correct), so a good skill has no top-level version.
+def _good_skill(description: str = "x" * 60, body: str = "Body.") -> str:
+    return (
+        f"---\nname: my-skill\ndescription: {description}\n"
+        f"metadata:\n  version: 0.1.0\n---\n\n{body}\n"
+    )
 
 
 def test_validate_clean():
@@ -89,7 +93,7 @@ def test_validate_malformed_frontmatter():
 
 
 def test_validate_name_rules():
-    text = "---\nname: My_Skill\ndescription: " + "x" * 60 + "\nversion: 0.1.0\n---\n\nbody\n"
+    text = "---\nname: My_Skill\ndescription: " + "x" * 60 + "\n---\n\nbody\n"
     fields = [p.field for p in lint_text(text, dir_name="other")]
     assert fields.count("name") == 2  # not kebab + mismatched dir
 
@@ -104,14 +108,22 @@ def test_validate_description_boundaries():
     assert any(p.field == "description" for p in long)
 
 
-def test_validate_missing_version_is_warning():
-    text = "---\nname: my-skill\ndescription: " + "x" * 60 + "\n---\n\nbody\n"
-    problems = lint_text(text, dir_name="my-skill")
+def test_validate_version_optional_and_placement():
+    # No version at all is clean (version is optional, not a required spec field).
+    no_version = "---\nname: my-skill\ndescription: " + "x" * 60 + "\n---\n\nbody\n"
+    assert lint_text(no_version, dir_name="my-skill") == []
+    # A top-level version is a placement warning (it belongs under metadata).
+    top_level = "---\nname: my-skill\ndescription: " + "x" * 60 + "\nversion: 0.1.0\n---\n\nbody\n"
+    problems = lint_text(top_level, dir_name="my-skill")
     assert problems and all(p.severity == "warning" for p in problems)
+    assert any(p.field == "version" for p in problems)
 
 
 def test_validate_empty_body():
-    text = "---\nname: my-skill\ndescription: " + "x" * 60 + "\nversion: 0.1.0\n---\n\n   \n"
+    text = (
+        "---\nname: my-skill\ndescription: " + "x" * 60
+        + "\nmetadata:\n  version: 0.1.0\n---\n\n   \n"
+    )
     assert any(p.field == "body" for p in lint_text(text, dir_name="my-skill"))
 
 

@@ -24,7 +24,7 @@ from .slug import is_kebab_case, slugify
 from .templates import build_body
 from .validate import LintResult, Problem, lint_path, lint_skill_file, lint_text
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "forge",
