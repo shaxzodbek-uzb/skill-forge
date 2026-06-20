@@ -61,7 +61,8 @@ tests/                   # pytest; everything offline, no network, no anthropic 
 examples/                # runnable demos
 ```
 
-Distribution name `skill-forge`; import package `skill_forge`. Python >=3.10.
+PyPI distribution name `claude-skill-forge` (the bare `skill-forge` was blocked by PyPI's
+name-similarity guard); CLI command `skill-forge`; import package `skill_forge`. Python >=3.10.
 License MIT (holder: "Shaxzodbek Sobirov / Blaze"). **Zero runtime dependencies** for the
 core; `anthropic` is the only optional extra (for `--llm`).
 

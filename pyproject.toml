@@ -1,5 +1,5 @@
 [project]
-name = "skill-forge"
+name = "claude-skill-forge"
 version = "0.1.0"
 description = "Turn a codebase, package, or doc into a valid Claude SKILL.md — offline, deterministic, and valid by construction. Optional Claude refinement. Zero runtime dependencies."
 readme = "README.md"

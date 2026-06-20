@@ -7,11 +7,12 @@
 skill it writes is **valid by construction**.
 
 ```bash
-pip install skill-forge
+pip install claude-skill-forge       # the CLI it installs is `skill-forge`
 skill-forge forge ./my-tool          # writes .claude/skills/my-tool/SKILL.md
 ```
 
 [![CI](https://github.com/shaxzodbek-uzb/skill-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/shaxzodbek-uzb/skill-forge/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/claude-skill-forge)](https://pypi.org/project/claude-skill-forge/)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Dependencies](https://img.shields.io/badge/runtime%20deps-0-brightgreen)
@@ -40,9 +41,12 @@ bundled here too (`skill-forge lint`) so the tool stands alone.
 
 ## Install
 
+The package is published on PyPI as **`claude-skill-forge`**; it installs a CLI named
+`skill-forge` (and the import package is `skill_forge`).
+
 ```bash
-pip install skill-forge                  # core: zero runtime dependencies
-pip install 'skill-forge[anthropic]'     # adds the optional --llm refiner
+pip install claude-skill-forge               # core: zero runtime dependencies
+pip install 'claude-skill-forge[anthropic]'  # adds the optional --llm refiner
 ```
 
 ## Quickstart (30 seconds)
@@ -101,7 +105,7 @@ exiting non-zero if they differ — so a skill that drifted from the code it des
 the build:
 
 ```yaml
-- run: pip install skill-forge
+- run: pip install claude-skill-forge
 - run: skill-forge check ./my-tool --name my-tool
 ```
 
