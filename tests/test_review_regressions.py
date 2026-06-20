@@ -135,6 +135,21 @@ def test_generated_version_is_under_metadata(python_project):
     assert lint_text(text, dir_name="widget") == []
 
 
+# spec alignment — a metadata value YAML would read as a number/bool (e.g. a `1.0`
+# version) is quoted so it stays a string; skillspec's metadata-type rule and the
+# Agent Skills spec require metadata to be a string-valued map.
+def test_yaml_typed_metadata_value_is_quoted():
+    from skill_forge.frontmatter import render_frontmatter
+
+    text = render_frontmatter({"name": "x", "metadata": {"version": "1.0"}})
+    assert 'version: "1.0"' in text
+    assert "version: 1.0\n" not in text
+    # a semver is not a YAML number and stays bare (no needless quoting / churn).
+    semver = render_frontmatter({"name": "x", "metadata": {"version": "0.1.0"}})
+    assert "version: 0.1.0" in semver
+    assert '"0.1.0"' not in semver
+
+
 # #13 — When-to-use is derived from signals, not static boilerplate.
 def test_when_to_use_is_signal_driven():
     body = build_body(

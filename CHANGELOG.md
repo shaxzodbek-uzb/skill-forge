@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-20
+
+### Fixed
+
+- **Metadata values are always emitted as strings.** A `metadata` value that a YAML
+  parser would coerce to a number, boolean, or null — most commonly a `version` like
+  `1.0` (a float) — is now quoted (`version: "1.0"`). Previously such values were written
+  bare, so a numeric-looking `--version-str` produced `metadata.version: 1.0`, which the
+  sibling linter [`skillspec`](https://github.com/shaxzodbek-uzb/skillspec) flagged as a
+  non-string metadata value. Semantic versions like `0.1.0` (not a YAML number) are
+  unaffected. This closes the last gap in the "forge → check" agreement.
+
 ## [0.1.1] - 2026-06-20
 
 ### Changed

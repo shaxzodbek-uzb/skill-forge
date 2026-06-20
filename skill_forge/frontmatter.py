@@ -14,6 +14,11 @@ _BLOCK_RE = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.DOTALL)
 _FIELD_RE = re.compile(r"^([A-Za-z0-9_-]+):\s?(.*)$")
 # Characters that make a bare scalar ambiguous to a real YAML parser.
 _NEEDS_QUOTE_START = set("!&*[]{}#|>@%\"'?,-")
+# A bare scalar a YAML parser would coerce to a non-string (number / bool / null).
+_YAML_NUMBER_RE = re.compile(r"^[-+]?(\.\d+|\d+\.?\d*)([eE][-+]?\d+)?$")
+_YAML_TYPED_WORDS = frozenset(
+    {"true", "false", "yes", "no", "on", "off", "y", "n", "null", "none", "~"}
+)
 
 
 def _needs_quote(value: str) -> bool:
@@ -26,6 +31,11 @@ def _needs_quote(value: str) -> bool:
     return value[0] in _NEEDS_QUOTE_START
 
 
+def _is_yaml_typed(value: str) -> bool:
+    """True if a bare scalar would parse as a number, bool, or null (not a string)."""
+    return value.lower() in _YAML_TYPED_WORDS or bool(_YAML_NUMBER_RE.match(value))
+
+
 def _quote(value: str) -> str:
     escaped = value.replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
@@ -33,6 +43,15 @@ def _quote(value: str) -> str:
 
 def _scalar(value: str) -> str:
     return _quote(value) if _needs_quote(value) else value
+
+
+def _metadata_scalar(value: str) -> str:
+    """Render a ``metadata`` value, which the spec defines as a string.
+
+    A value a YAML parser would otherwise read as a number/bool/null (e.g. a
+    ``1.0`` version) is quoted so it stays a string and passes string-map linters.
+    """
+    return _quote(value) if _needs_quote(value) or _is_yaml_typed(value) else value
 
 
 def render_frontmatter(fields: dict[str, object]) -> str:
@@ -54,7 +73,7 @@ def render_frontmatter(fields: dict[str, object]) -> str:
                 continue
             lines.append(f"{key}:")
             for sub_key, sub_value in nested.items():
-                lines.append(f"  {sub_key}: {_scalar(sub_value)}")
+                lines.append(f"  {sub_key}: {_metadata_scalar(sub_value)}")
             continue
         lines.append(f"{key}: {_scalar(str(value))}")
     lines.append("---")
