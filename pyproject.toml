@@ -5,7 +5,7 @@ description = "Turn a codebase, package, or doc into a valid Claude SKILL.md —
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Shaxzodbek Sobirov", email = "shaxzodbek@blaze.uz" }]
+authors = [{ name = "Shaxzodbek Qambaraliyev", email = "shaxzodbek@blaze.uz" }]
 keywords = ["claude", "skills", "skill-md", "agent", "codegen", "cli", "anthropic", "mcp", "scaffold", "linter"]
 classifiers = [
     "Development Status :: 4 - Beta",
