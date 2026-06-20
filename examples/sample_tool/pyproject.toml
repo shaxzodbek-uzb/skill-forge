@@ -1,0 +1,8 @@
+[project]
+name = "sample-tool"
+version = "0.1.0"
+description = "A tiny greeter CLI used to demo skill-forge."
+keywords = ["greeting", "demo", "cli"]
+
+[project.scripts]
+sample-tool = "sample_tool.cli:main"
