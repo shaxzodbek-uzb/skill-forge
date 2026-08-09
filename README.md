@@ -11,7 +11,6 @@ pip install claude-skill-forge       # the CLI it installs is `skill-forge`
 skill-forge forge ./my-tool          # writes .claude/skills/my-tool/SKILL.md
 ```
 
-[![CI](https://github.com/shaxzodbek-uzb/skill-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/shaxzodbek-uzb/skill-forge/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/claude-skill-forge)](https://pypi.org/project/claude-skill-forge/)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
