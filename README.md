@@ -63,6 +63,10 @@ skill-forge lint .claude/skills
 
 # CI drift guard — fail if the skill no longer matches the code:
 skill-forge check ./my-tool --name my-tool
+
+# Refresh a drifted skill, keeping the parts you wrote by hand:
+skill-forge update ./my-tool
+skill-forge update ./my-tool --diff         # preview the merge
 ```
 
 ### What it extracts
@@ -107,6 +111,44 @@ the build:
 - run: pip install claude-skill-forge
 - run: skill-forge check ./my-tool --name my-tool
 ```
+
+## Updating a skill you've edited
+
+`check` tells you a skill drifted. The problem is what comes next: `forge --force`
+overwrites the file, taking every hand edit with it — and hand edits are the point, since
+a generated skill is a first draft.
+
+`skill-forge update` regenerates and **merges**, section by section:
+
+```console
+$ skill-forge update ./my-tool
+✓ updated .claude/skills/my-tool/SKILL.md
+  refreshed: description, Notes
+  added: Configuration
+  kept your edits: When to use, Gotchas
+```
+
+Use `--diff` to see the merge before it's written.
+
+To do that it has to tell *the generator changed this* from *a human changed this*, and a
+two-way diff can't. So `forge` records a `.skill-forge.json` beside the skill holding a
+hash of each section as generated. Then each section has an unambiguous answer:
+
+| on disk | | outcome |
+|---|---|---|
+| matches the manifest | untouched | take the regenerated version |
+| differs from the manifest | you edited it | **keep yours** |
+| absent | new from the generator | add it |
+| not in the regenerated output | you wrote it | keep it |
+
+Commit `.skill-forge.json`. Without it — a skill forged before this existed, or the file
+deleted — everything present is treated as hand-edited, so `update` only *adds* and never
+silently reverts prose you wrote. That's the safe direction to be wrong in, and it says so
+in the output.
+
+Your edits stay marked as edits across repeated updates: re-baselining records the newly
+generated content but preserves the original hash for every section it kept, so an edit
+isn't quietly adopted as generated output on the next run.
 
 ## What this is **not**
 
