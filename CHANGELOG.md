@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-16
+
+### Added
+
+- **`skill-forge update`** — regenerate a skill from a changed source without
+  discarding hand edits. Until now the only way to pick up new source material
+  was to re-run `forge` and overwrite, which threw away every refinement made to
+  the generated skill; the alternative was to merge by hand.
+- A three-way merge against `.skill-forge.json`, a manifest written by `forge`
+  recording a digest of each section as generated. A section still matching its
+  digest is replaced with the newly generated text; a section you have edited is
+  kept as yours. The frontmatter `description` follows the same rule — it is
+  regenerated only if nobody has touched it.
+- `update --diff` shows what would change without writing.
+- `check` now points at `update` rather than `forge`, so the CI drift guard
+  suggests the command that preserves edits.
+
+### Notes
+
+- A skill forged before 0.2.0 has no manifest. `update` still works, but treats
+  everything already present as hand-edited: it adds new sections and refreshes
+  nothing, and prints a note saying so. That is the safe direction to be wrong
+  in — guessing which sections were generated would silently overwrite the ones
+  it guessed wrong about. Re-run `forge` once to start the manifest.
+
 ## [0.1.2] - 2026-06-20
 
 ### Fixed
