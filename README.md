@@ -16,6 +16,10 @@ skill-forge forge ./my-tool          # writes .claude/skills/my-tool/SKILL.md
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Dependencies](https://img.shields.io/badge/runtime%20deps-0-brightgreen)
 
+<p align="center">
+  <img src="docs/demo.svg" alt="skill-forge generating a valid SKILL.md from a codebase with no API key" width="860">
+</p>
+
 ---
 
 ## Why
